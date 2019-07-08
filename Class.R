@@ -1,17 +1,12 @@
 # Mehrnoosh Oghbaie
 # 02/10/2019
 
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ########################################################################################
 # Set working directory
 ########################################################################################
-rm(list=ls())
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 source("Functions.R")
-CRAN.packages <- c("readr","data.table","reshape2","dplyr","magrittr","stringr","corrplot","ggplot2","R6")
-bioconductor.packages <- c("biomaRt","ReactomePA")
-install.packages.if.necessary(CRAN.packages,bioconductor.packages)
-
-
 Template <- R6Class("Template",
                     private = list(
                       save_dir = "db/corum_complex_inspected.RData",
@@ -54,7 +49,7 @@ Template <- R6Class("Template",
                       }
                       ,
                       max_quant_obj = function(){
-                        con <- gzfile("max.quant.sign_06282019.rds")
+                        con <- gzfile("input/max.quant.sign_06282019.rds")
                         data <- readRDS(con)
                         close(con)
                         return(data)

@@ -1,9 +1,22 @@
-source("Class.R")
-library(shiny)
-library(plotly)
-library(DT)
-source("Functions.R")
+###### Mehrnoosh Oghbaie
+### 07/06/2019
+### Shiny app
 
+library("data.table")
+library("reshape2")
+library("dplyr")
+library("magrittr")
+library("stringr")
+library("ggplot2")
+library("R6")
+library("shiny")
+library("plotly")
+library("DT")
+library("Matrix")
+setRepositories(ind = 1,addURLs = c(BioC = "https://bioconductor.org/packages/3.8/bioc"))
+library("biomaRt")
+source("Functions.R", local=TRUE)
+source("Class.R", local=TRUE)
 NCBP <- Template$new()
 NCBP$enrichProteinPerTarget("target")
 #NCBP$enrichProteinPerTarget("group")
