@@ -1,29 +1,4 @@
 
-######################################################################################
-# Either download or install the required library from CRAN or bioconductor
-#######################################################################################
-
-install.packages.if.necessary <- function(CRAN.packages=c(), bioconductor.packages=c()) {
-  #if (length(bioconductor.packages) > 0) {
-  #  source("http://bioconductor.org/biocLite.R")
-  #}
-  
-  for (p in bioconductor.packages) {
-    if (!require(p, character.only=T)) {
-      BiocManager::install(p,version = "3.8") 
-    }
-    library(p,lib.loc="~/R/win-library/3.5",character.only=T)
-  }
-  
-  for (p in CRAN.packages) {	
-    if (!require(p, character.only=T)) { 	
-      install.packages(p) 	
-    }	
-    #library(p, lib.loc="~/R/win-library/3.5",character.only=T) 
-    library(p, lib.loc="~/R/win-library/3.5",character.only=T)
-  }
-}
-
 
 ###################################################################################################
 ### get gene name from uniprot ID , 
@@ -138,13 +113,15 @@ plot_related_enriched <- function(res, related_complex_enriched,target){
   result$GeneRatio <- as.numeric(as.character(result$GeneRatio))
   result$ComplexName <- as.character(result$ComplexName)
   result$GeneRatio[is.na(result$GeneRatio)] <- 0
-  png(paste0("F:/NCBP/recent/image/Related_complex_barplot_",target,".png"), width = 700, height = 450+(dim(result)[1]*dim(result)[2]-90)*2)
+  #png(paste0("F:/NCBP/recent/image/Related_complex_barplot_",target,".png"), width = 700, height = 450+(dim(result)[1]*dim(result)[2]-90)*2)
   qq <- ggplot(mapping = aes(x=ComplexName, y=GeneRatio, fill=target))+
     geom_bar(data = related_complex_enriched, fill="gray",stat="identity")+
     geom_bar(data = result, stat="identity",position="dodge")+
     coord_flip()
-  print(qq)
-  dev.off()
+  #print(qq)
+  #dev.off()
+  ggsave(file=paste0("image/Related_complex_barplot_",target,".pdf"), qq, width=10, height=9, dpi=100)
+  
 }
 
 
@@ -153,7 +130,7 @@ plot_related_enriched <- function(res, related_complex_enriched,target){
 
 plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
   test <- test[test$GeneRatio>r,] 
-  png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
+  #png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
   q <- ggplot(test) +
     geom_point(aes(x=target, y=ComplexName, col= average_intensity ,size=GeneRatio)) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -161,8 +138,10 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
           axis.title.y=element_blank())+
     scale_color_gradient(low="blue",high='red',na.value="gray")
     #scale_size_area()
-  print(q)
-  dev.off()
+ # print(q)
+  #dev.off()
+  
+  ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=10, height=9, dpi=100)
 }
 
 #######################################################################################
