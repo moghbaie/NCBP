@@ -120,7 +120,7 @@ plot_related_enriched <- function(res, related_complex_enriched,target){
     coord_flip()
   #print(qq)
   #dev.off()
-  ggsave(file=paste0("image/Related_complex_barplot_",target,".pdf"), qq, width=10, height=9, dpi=100)
+  ggsave(file=paste0("image/Related_complex_barplot_",target,".pdf"), qq, width=10, height=8+(dim(result)[1]*dim(result)[2]-90)/100, dpi=100)
   
 }
 
@@ -141,7 +141,7 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
  # print(q)
   #dev.off()
   
-  ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=10, height=9, dpi=100)
+  ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1)/6, height=7+(dim(test)[1]-30)/12, dpi=100)
 }
 
 #######################################################################################
