@@ -113,7 +113,7 @@ Template$set("public","enrichProteinPerTarget", function(target){
   di <- self$max_quant_obj$GetIntensityTable()
   cols2 <- colnames(di)
   for(tar in unique(self$conditions[[target]])){
-    di[[paste0("average_",tar)]] <-  rowMeans(dplyr::select(di,cols2[grepl(tar,cols2)]),na.rm=TRUE)
+    di[[paste0("average_",tar)]] <-  round(rowMeans(dplyr::select(di,cols2[grepl(tar,cols2)]),na.rm=TRUE),2)
   }
   di$uniprotID <- apply(di,1, function(x) strsplit(strsplit(x[["Protein IDs"]],";")[[1]][1],"-")[[1]][1])
   
@@ -134,14 +134,14 @@ Template$set("public","enrichProteinPerTarget", function(target){
     dx <-dx[!is.na(dx$V1),]
     dt<- rbind(dt, dx)
   }
-  colnames(dt) <- c("ComplexName", "uniprotID", "target", "average_intensity", "significant", "GeneRatio","p.adj")
+  colnames(dt) <- c("ComplexName", "uniprotID", "target", "average_log_intensity", "significant", "GeneRatio","p.adj")
   self$average_intensity = dt
   ##############################################################################################
   ####  average intensity in each target for related complexes
   dt1 <- dt %>% 
     dplyr::mutate(ComplexName = as.character(ComplexName),target = as.character(target)) %>%
     dplyr::group_by(ComplexName,target) %>% 
-    dplyr::summarise(average_intensity = mean(average_intensity, na.rm=TRUE),GeneRatio=GeneRatio[1],p.adj=p.adj[1])%>%
+    dplyr::summarise(average_intensity = mean(average_log_intensity, na.rm=TRUE),GeneRatio=GeneRatio[1],p.adj=p.adj[1])%>%
     dplyr::filter(ComplexName %in% as.character(self$related_complex_enriched$ComplexName), !is.na(p.adj), GeneRatio>=0.5)
   
   dt1 <- data.frame(dt1)
@@ -152,14 +152,14 @@ Template$set("public","enrichProteinPerTarget", function(target){
   #### average intensity in each target for unrelated complexes
   dt2 <- dt %>% 
     dplyr::group_by(ComplexName,target) %>% 
-    dplyr::summarise(average_intensity = mean(average_intensity, na.rm=TRUE),GeneRatio=GeneRatio[1],p.adj=p.adj[1])%>%
+    dplyr::summarise(average_intensity = mean(average_log_intensity, na.rm=TRUE),GeneRatio=GeneRatio[1],p.adj=p.adj[1])%>%
     dplyr::filter(!ComplexName %in% self$related_complex_enriched$ComplexName, !is.na(p.adj), GeneRatio>=0.5)
   self$unrelated_complex_average_intensity = dt2
   
-  #plot_related_enriched(self$complex_enriched, self$related_complex_enriched,target) 
-  #plot_cluster(dt1,self$related_complex_enriched,title="Related complex enrichment (average intensity& gene ratio)", r=0.3,target)
-  #plot_cluster(dt2,self$related_complex_enriched,title="Unrelated complex enrichment(average intensity& gene ratio)", r=0.5,target)
-  #plot_cluster(dt2,self$related_complex_enriched,title="Unrelated complex enrichment(average intensity& gene ratio)", r=0.6,target)
+  plot_related_enriched(self$complex_enriched, self$related_complex_enriched,target) 
+  plot_cluster(dt1,self$related_complex_enriched,title="Related complex enrichment (average intensity& gene ratio)", r=0.0,target)
+  plot_cluster(dt2,self$related_complex_enriched,title="Unrelated complex enrichment(average intensity& gene ratio)", r=0.5,target)
+  plot_cluster(dt2,self$related_complex_enriched,title="Unrelated complex enrichment(average intensity& gene ratio)", r=0.6,target)
 })
 
 

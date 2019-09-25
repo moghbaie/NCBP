@@ -137,8 +137,7 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
           axis.title.x=element_blank(),
           axis.title.y=element_blank())+
     scale_color_gradient(low="blue",high='red',na.value="gray")
-    #scale_size_area()
- # print(q)
+  #print(q)
   #dev.off()
   
   ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1)/6, height=7+(dim(test)[1]-30)/12, dpi=100)
@@ -158,21 +157,22 @@ plotly_cluster <- function(test = NCBP$related_complex_average_intensity,
   cols <- scales::col_numeric(c("Green","Red"), domain = NULL)(vals)
   colz <- setNames(data.frame(vals[o], cols[o]), NULL)
   
+  m <- length(unique(test$target))
   q <- plot_ly(test, x=~target, y=~ComplexName,
-               legendgroup = ~20*GeneRatio,showlegend = T, colors = colorRamp(c("red", "green")),
-               height = 360+(dim(test2 )[1]-20)*20,
+               legendgroup = ~10*GeneRatio,showlegend = T, colors = colorRamp(c("red", "green")),
+               height = 450+(dim(test2 )[1]-20)*20,
                type="scatter",mode ="markers",
                marker = list(color= ~average_intensity ,size=~20*GeneRatio,
                              colorbar=list(
-                               title="avg Intensity"
+                               title="avg Log LFQ Intensity"
                              ),
                              colorscale=colz,
                              reversescale =F),
-               text = ~paste(paste("average intensity: ", average_intensity),paste("protein ratio", GeneRatio), sep="\n"))%>%
+               text = ~paste(paste("average Log LFQ Intensity: ", average_intensity),paste("protein ratio", GeneRatio), sep="\n"))%>%
     layout(
-      title = paste0(gsub("\\s*\\([^\\)]+\\)","",as.character(title))," ",target," ",r),
-      xaxis = list(title = "Target")
-     # margin = list(l = 100)
+      title = paste0(gsub("\\s*\\([^\\)]+\\)","",as.character(title))," ",target),
+      xaxis = list(title = "Target"),yaxis=list(title = "")
+      # margin = list(l = 100)
     )
   return(q)
 }
