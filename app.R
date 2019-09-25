@@ -83,7 +83,7 @@ dc <- reactive({
     plotly_cluster(test = NCBP$related_complex_average_intensity,
                    related_complex_enriched = NCBP$related_complex_enriched,
                    title="Related complex enrichment (average intensity& gene ratio)",
-                   r=0.3,
+                   r=0.0,
                    target=input$tar)
   })
   output$plot2 <- renderPlotly({
