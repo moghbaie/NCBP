@@ -147,7 +147,7 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
             axis.title.x=element_blank(),
             axis.title.y=element_blank())+
       scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_size(range = c(k,10))+
-      facet_grid(. ~ category, scales = "free")
+      facet_grid(. ~ category, scales = "free", space = "free")
     ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1), height=6+(dim(test)[1]-20)/6, dpi=100)
   }else{
     test <- test[test$GeneRatio>r,] 
