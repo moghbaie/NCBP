@@ -129,8 +129,8 @@ Template$set("public","enrichProteinPerTarget", function(target){
     dx$average_intensity <-  di[[paste0("average_",tar)]][match(as.character(dx$V2),di$uniprotID)]
     dx$significant <- ifelse(dz1$target[dz1$target==tar][match(dx$V2,dz1$uniprotID[dz1$target==tar])]==tar,"significant","non-significant")
     res1 <- self$complex_enriched %>% filter(target==tar)
-    dx$GeneRatio <- res1$GeneRatio[match(as.character(dx$V1),res1$ComplexName)]
-    dx$p.adj <- res1$p.adj[match(as.character(dx$V1),res1$ComplexName)]
+    dx$GeneRatio <- round(res1$GeneRatio[match(as.character(dx$V1),res1$ComplexName)],2)
+    dx$p.adj <- round(res1$p.adj[match(as.character(dx$V1),res1$ComplexName)],2)
     dx <-dx[!is.na(dx$V1),]
     dt<- rbind(dt, dx)
   }

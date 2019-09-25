@@ -130,18 +130,19 @@ plot_related_enriched <- function(res, related_complex_enriched,target){
 
 plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
   test <- test[test$GeneRatio>r,] 
-  k <- min(test$GeneRatio)*5
+  k <- min(test$GeneRatio)*10
   #png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
   q <- ggplot(test) +
     geom_point(aes(x=target, y=ComplexName, col= average_intensity ,size=GeneRatio)) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1),
           axis.title.x=element_blank(),
           axis.title.y=element_blank())+
-    scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_radius(range = c(k,5))
+   # geom_text(aes(x=target, y=ComplexName,label=GeneRatio),hjust=0, vjust=0, size = 2, col="gray")+
+    scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_radius(range = c(k,10))
   #print(q)
   #dev.off()
   
-  ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1)/5, height=7+(dim(test)[1]-30)/10, dpi=100)
+  ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1)/5, height=6+(dim(test)[1]-20)/4, dpi=100)
 }
 
 #######################################################################################
