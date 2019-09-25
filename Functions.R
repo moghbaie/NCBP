@@ -137,7 +137,8 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
     test[["category"]] <- apply(test, 1 , function(x) strsplit(x[["target"]],"_")[[1]][2])
     test$target <-  apply(test,1, function(x) as.numeric(strsplit(x[["target"]],"_")[[1]][3]))
     test[order(as.numeric(test$target)),]
-    test$target <- as.factor(test$target)
+    
+    test$target <- factor(test$target,levels = c(18,12,7,10,20,14))
     test$category <- as.factor(test$category)
     #png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
     q <- ggplot(test) +
@@ -146,7 +147,7 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
             axis.title.x=element_blank(),
             axis.title.y=element_blank())+
       scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_size(range = c(k,10))+
-      facet_grid(. ~ category)
+      facet_grid(. ~ category, scales = "free")
     ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1), height=6+(dim(test)[1]-20)/6, dpi=100)
   }else{
     test <- test[test$GeneRatio>r,] 
