@@ -129,20 +129,46 @@ plot_related_enriched <- function(res, related_complex_enriched,target){
 #' Plot enriched clusters by complex
 
 plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
-  test <- test[test$GeneRatio>r,] 
-  k <- min(test$GeneRatio)*10
-  #png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
-  q <- ggplot(test) +
-    geom_point(aes(x=target, y=ComplexName, col= average_intensity ,size=GeneRatio)) +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank())+
-   # geom_text(aes(x=target, y=ComplexName,label=GeneRatio),hjust=0, vjust=0, size = 2, col="gray")+
-    scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_size(range = c(k,10))
-  #print(q)
+  if(target=="group"){
+    
+    test <- test[test$GeneRatio>r,] 
+    k <- min(test$GeneRatio)*10
+    
+    test[["category"]] <- apply(test, 1 , function(x) strsplit(x[["target"]],"_")[[1]][2])
+    test$target <-  apply(test,1, function(x) as.numeric(strsplit(x[["target"]],"_")[[1]][3]))
+    test[order(as.numeric(test$target)),]
+    test$target <- as.factor(test$target)
+    test$category <- as.factor(test$category)
+    #png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
+    q <- ggplot(test) +
+      geom_point(aes(x=target, y=ComplexName, col= average_intensity ,size=GeneRatio)) +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank())+
+      scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_size(range = c(k,10))+
+      facet_grid(. ~ category)
+    ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1), height=6+(dim(test)[1]-20)/6, dpi=100)
+  }else{
+    test <- test[test$GeneRatio>r,] 
+    k <- min(test$GeneRatio)*10
+    test$target <-  gsub("Rockefeller_|Columbia_","",test$target)
+    test[order(test$target),]
+    test$target <- as.factor(test$target)
+    #png(paste0("F:/NCBP/recent/image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".png"), width = 650+(length(unique(test$target))-1)*15, height = 470+(dim(test)[1]-30)*10)
+    q <- ggplot(test) +
+      geom_point(aes(x=target, y=ComplexName, col= average_intensity ,size=GeneRatio)) +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank())+
+      # geom_text(aes(x=target, y=ComplexName,label=GeneRatio),hjust=0, vjust=0, size = 2, col="gray")+
+      scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_size(range = c(k,10))
+    #print(q)
+    ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1)/5, height=6+(dim(test)[1]-20)/4, dpi=100)
+  }
+  
   #dev.off()
   
-  ggsave(file=paste0("image/",gsub(" ","_",gsub("\\s*\\([^\\)]+\\)","",as.character(title))),"_",target,"_",r,".pdf"), q, width=9+(length(unique(test$target))-1)/5, height=6+(dim(test)[1]-20)/4, dpi=100)
+  
 }
 
 #######################################################################################
@@ -152,13 +178,14 @@ plotly_cluster <- function(test = NCBP$related_complex_average_intensity,
                            r=0.3,
                            target="target"){
   test <- data.frame(test[test[["GeneRatio"]]>r ,])
+  
   test2 <- test[as.character(test$ComplexName) %in% as.character(test %>% group_by(ComplexName) %>% summarize(min(GeneRatio)>0)%>% .$ComplexName) ,] 
   
   vals <- unique(scales::rescale(c(test$average_intensity)))
   o <- order(vals, decreasing = FALSE)
   cols <- scales::col_numeric(c("Green","Red"), domain = NULL)(vals)
   colz <- setNames(data.frame(vals[o], cols[o]), NULL)
-  
+  test$target <-  gsub("Rockefeller_|Columbia_","",test$target)
   m <- length(unique(test$target))
   q <- plot_ly(test, x=~target, y=~ComplexName,
                legendgroup = ~10*GeneRatio,showlegend = T, colors = colorRamp(c("red", "green")),
@@ -173,9 +200,7 @@ plotly_cluster <- function(test = NCBP$related_complex_average_intensity,
                text = ~paste(paste("average Log LFQ Intensity: ", average_intensity),paste("protein ratio", GeneRatio), sep="\n"))%>%
     layout(
       title = paste0(gsub("\\s*\\([^\\)]+\\)","",as.character(title))," ",target),
-      xaxis = list(title = "Target"),yaxis=list(title = "")
-      # margin = list(l = 100)
-    )
+      xaxis = list(title = "Target"),yaxis=list(title = ""))
   return(q)
 }
 
