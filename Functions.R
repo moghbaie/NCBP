@@ -138,7 +138,7 @@ plot_cluster <- function(test,related_complex_enriched,title="", r=0.4,target){
           axis.title.x=element_blank(),
           axis.title.y=element_blank())+
    # geom_text(aes(x=target, y=ComplexName,label=GeneRatio),hjust=0, vjust=0, size = 2, col="gray")+
-    scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_radius(range = c(k,10))
+    scale_color_gradient(low="blue",high='red',na.value="gray")+ scale_size(range = c(k,10))
   #print(q)
   #dev.off()
   
